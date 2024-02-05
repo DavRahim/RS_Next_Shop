@@ -1,13 +1,14 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import NavLink from "./NavLink";
 import { usePathname, useRouter } from "next/navigation";
 import { afterLoginNavData, beforeLoginNavData } from "@/data/navData";
 import useTheme from "@/hooks/useTheme";
 import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+import useCart from "@/hooks/useCart";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -19,6 +20,15 @@ const Navbar = () => {
   const path = usePathname();
 
   const [navToggle, setNavToggle] = useState(false);
+
+
+  const { cart } = useCart();
+
+  const total = useMemo(
+    () => cart.reduce((pre, cur) => cur.price * cur.quantity + pre, 0),
+    [cart]
+  );
+
 
   const handleLogout = async () => {
     const toastId = toast.loading("Loading...");
@@ -87,7 +97,7 @@ const Navbar = () => {
                   />
                 </svg>
                 <span className="badge badge-sm indicator-item bg-primary text-white dark:text-gray-300">
-                  {/* {cart.length} */} 9
+                  {cart.length} 
                 </span>
               </div>
             </label>
@@ -97,10 +107,10 @@ const Navbar = () => {
             >
               <div className="card-body">
                 <span className="text-lg font-bold">
-                  {/* {cart.length}  */} 7 Items
+                  {cart.length}  Items
                 </span>
                 <span className="text-info">
-                  Total: 7{/* ${total.toFixed(2)} */}
+                  Total: ${total.toFixed(2)}
                 </span>
                 <div className="card-actions">
                   <Link href="/checkout" className="block w-full">
